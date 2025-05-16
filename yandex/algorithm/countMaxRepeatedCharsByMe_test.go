@@ -1,13 +1,23 @@
 package algorithm
 
 import (
+	"errors"
 	"fmt"
+	"regexp"
 	"testing"
 )
 
-func CountMaxRepeatedCharsByMe(input string) int {
+var ErrInvalidInput = errors.New("invalid input")
+
+func CountMaxRepeatedCharsByMe(input string) (int, error) {
+	re := regexp.MustCompile("[A-Z]+")
+
+	if !re.MatchString(input) {
+		return 0, ErrInvalidInput
+	}
+
 	if len(input) < 2 {
-		return len(input)
+		return len(input), nil
 	}
 
 	maxLen := 0
@@ -31,7 +41,7 @@ func CountMaxRepeatedCharsByMe(input string) int {
 		maxLen = currentLen
 	}
 
-	return maxLen
+	return maxLen, nil
 }
 
 func TestCountMaxRepeatedCharsByMe(t *testing.T) {
@@ -39,6 +49,7 @@ func TestCountMaxRepeatedCharsByMe(t *testing.T) {
 		input  string
 		result int
 	}{
+		{"12313", 0},
 		{"", 0},
 		{"A", 1},
 		{"AB", 1},
@@ -51,7 +62,7 @@ func TestCountMaxRepeatedCharsByMe(t *testing.T) {
 	for _, test := range tests {
 		testName := fmt.Sprintf("%v,%v", test.input, test.result)
 		t.Run(testName, func(t *testing.T) {
-			res := CountMaxRepeatedCharsByMe(test.input)
+			res, _ := CountMaxRepeatedCharsByMe(test.input)
 			if res != test.result {
 				t.Errorf("%v => %d, got %d", test.input, test.result, res)
 			}
